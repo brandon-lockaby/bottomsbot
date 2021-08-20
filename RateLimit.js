@@ -60,6 +60,11 @@ var DataRateLimit = function(limit, interval_ms) {
 	this._size = 0;
 };
 
+DataRateLimit.prototype.check = function(size, time) {
+	var time = time || Date.now();
+	return (time >= this._after || this._size + size <= this._limit);
+};
+
 DataRateLimit.prototype.attempt = function(size, time) {
 	var time = time || Date.now();
 	
