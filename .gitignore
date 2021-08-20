@@ -1,0 +1,4 @@
+node_modules
+package-lock.json
+bottomsbot.db
+auth.json
