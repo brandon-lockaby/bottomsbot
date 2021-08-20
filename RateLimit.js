@@ -2,6 +2,7 @@
 class RateLimit {
 	constructor(interval_ms = 0) {
 		this._interval_ms = interval_ms; // (0 means no limit)
+		this._after = Date.now() - interval_ms;
 	}
 	check(time = Date.now()) {
 		return (time >= this._after);
