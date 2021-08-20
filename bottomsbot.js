@@ -28,110 +28,108 @@ let chatbot = new TwitchJs({
     username: auth.username
 });
 chatbot.chat.connect().then(global_user_state => {
-
     let chat = chatbot.chat;
-
-    function maybeWhisper(user, message) {
-        if(whisper_rate_limit_1.attempt() && whisper_rate_limit_2.attempt()) {
-            //chat.say(`#${auth.username}`, `.w ${user} ${message}`);
-            //return true;
-            // OKAY NEVERMIND ONLY VERIFIED BOTS CAN WHISPER
-            // https://discuss.dev.twitch.tv/t/accessing-whispers-with-bots/26208/15
-            // https://dev.twitch.tv/limit-increase
-        }
-        return false;
-    }
-
-    function maybeSay(channel, message) {
-        if(chat_rate_limit.attempt()) {
-            chat.say(channel, message);
-        }
-    }
-
-    function join(channel) {
-        joins.push(channel);
-        channels[channel] = {};
-        db.put(`join.${channel}`, JSON.stringify(channels[channel]));
-        return true;
-    }
-
-    function leave(channel) {
-        delete channels[channel];
-        db.del(`join.${channel}`);
-        chat.part(channel); // I dunno if this is rate limited...
-        return true;
-    }
-
-    function doCommand(channel, user, msg) {
-        let args = msg.split(' ');
-        if(!args.length) return;
-        let cmd = args.shift().toLowerCase();
-        if(cmd == "!joinme") {
-            maybeSay(channel, `Joining #${user}.`);
-            return join(`#${user}`);
-        } else if(cmd == "!leaveme") {
-            maybeSay(channel, `Leaving #${user}.`);
-            return leave(`#${user}`);
-        } else if(cmd == "!bottoms") {
-            if(!channels[channel]) {
-                maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
-                return true;
-            }
-            let settings = {};
-            Object.assign(settings, default_settings);
-            Object.assign(settings, channels[channel]);
-            if(chat_rate_limit.attempt()) {
-                maybeSay(channel, `@${user} settings for ${channel}: ${JSON.stringify(settings)}`);
-            }
-            return true;
-        }
-        /*else if(cmd == "!word" && args.length > 0) {
-            let ch = `#${user}`;
-            if(!channels[ch]) {
-                maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
-                return;
-            }
-            channels[ch].word = args[0];
-            db.put(`join.${ch}`, JSON.stringify(channels[ch]));
-            maybeSay(channel, `@${user} changed my word to '${args[0]}'`);
-            return true;
-        }*/
-        else if(cmd == "!response_frequency" && args.length > 0) {
-            let ch = `#${user}`;
-            if(!channels[ch]) {
-                maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
-                return true;
-            }
-            let freq = parseFloat(args[0]);
-            if(isNaN(freq) || freq > 1 || freq < 0) {
-                maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !response_frequency 0.1`);
-                return true;
-            }
-            channels[ch].response_frequency = freq;
-            db.put(`join.${ch}`, JSON.stringify(channels[ch]));
-            maybeSay(channel, `@${user} changed response_frequency to ${args[0]}`);
-            return true;
-        }
-        else if(cmd == "!word_frequency" && args.length > 0) {
-            let ch = `#${user}`;
-            if(!channels[ch]) {
-                maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
-                return true;
-            }
-            let freq = parseFloat(args[0]);
-            if(isNaN(freq) || freq > 1 || freq < 0) {
-                maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !word_frequency 0.05`);
-                return true;
-            }
-            channels[ch].word_frequency = freq;
-            db.put(`join.${ch}`, JSON.stringify(channels[ch]));
-            maybeSay(channel, `@${user} changed word_frequency to ${args[0]}`);
-            return true;
-        }
-    }
-
     let own_channel = `#${auth.username}`;
     chat.join(own_channel).then(channel_state => {
+
+        function maybeWhisper(user, message) {
+            if(whisper_rate_limit_1.attempt() && whisper_rate_limit_2.attempt()) {
+                //chat.say(`#${auth.username}`, `.w ${user} ${message}`);
+                //return true;
+                // OKAY NEVERMIND ONLY VERIFIED BOTS CAN WHISPER
+                // https://discuss.dev.twitch.tv/t/accessing-whispers-with-bots/26208/15
+                // https://dev.twitch.tv/limit-increase
+            }
+            return false;
+        }
+    
+        function maybeSay(channel, message) {
+            if(chat_rate_limit.attempt()) {
+                chat.say(channel, message);
+            }
+        }
+    
+        function join(channel) {
+            joins.push(channel);
+            channels[channel] = {};
+            db.put(`join.${channel}`, JSON.stringify(channels[channel]));
+            return true;
+        }
+    
+        function leave(channel) {
+            delete channels[channel];
+            db.del(`join.${channel}`);
+            chat.part(channel); // I dunno if this is rate limited...
+            return true;
+        }
+    
+        function doCommand(channel, user, msg) {
+            let args = msg.split(' ');
+            if(!args.length) return;
+            let cmd = args.shift().toLowerCase();
+            if(cmd == "!joinme") {
+                maybeSay(channel, `Joining #${user}.`);
+                return join(`#${user}`);
+            } else if(cmd == "!leaveme") {
+                maybeSay(channel, `Leaving #${user}.`);
+                return leave(`#${user}`);
+            } else if(cmd == "!bottoms") {
+                if(!channels[channel]) {
+                    maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
+                    return true;
+                }
+                let settings = {};
+                Object.assign(settings, default_settings);
+                Object.assign(settings, channels[channel]);
+                if(chat_rate_limit.attempt()) {
+                    maybeSay(channel, `@${user} settings for ${channel}: ${JSON.stringify(settings)}`);
+                }
+                return true;
+            }
+            /*else if(cmd == "!word" && args.length > 0) {
+                let ch = `#${user}`;
+                if(!channels[ch]) {
+                    maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
+                    return;
+                }
+                channels[ch].word = args[0];
+                db.put(`join.${ch}`, JSON.stringify(channels[ch]));
+                maybeSay(channel, `@${user} changed my word to '${args[0]}'`);
+                return true;
+            }*/
+            else if(cmd == "!response_frequency" && args.length > 0) {
+                let ch = `#${user}`;
+                if(!channels[ch]) {
+                    maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
+                    return true;
+                }
+                let freq = parseFloat(args[0]);
+                if(isNaN(freq) || freq > 1 || freq < 0) {
+                    maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !response_frequency 0.1`);
+                    return true;
+                }
+                channels[ch].response_frequency = freq;
+                db.put(`join.${ch}`, JSON.stringify(channels[ch]));
+                maybeSay(channel, `@${user} changed response_frequency to ${args[0]}`);
+                return true;
+            }
+            else if(cmd == "!word_frequency" && args.length > 0) {
+                let ch = `#${user}`;
+                if(!channels[ch]) {
+                    maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
+                    return true;
+                }
+                let freq = parseFloat(args[0]);
+                if(isNaN(freq) || freq > 1 || freq < 0) {
+                    maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !word_frequency 0.05`);
+                    return true;
+                }
+                channels[ch].word_frequency = freq;
+                db.put(`join.${ch}`, JSON.stringify(channels[ch]));
+                maybeSay(channel, `@${user} changed word_frequency to ${args[0]}`);
+                return true;
+            }
+        }
 
         // join all the channels in the db
         let channels = {};
@@ -181,6 +179,8 @@ chatbot.chat.connect().then(global_user_state => {
             }
             let replacement_count = 0;
             let words = msg.message.split(' ');
+            let action = words[0] == '\u0001ACTION';
+            if(action) words.shift();
             for(let i = 0; i < words.length; i++) {
                 let word = words[i];
                 let pluralizer = word.endsWith('s') ? 's' : '';
@@ -207,6 +207,7 @@ chatbot.chat.connect().then(global_user_state => {
             if(!replacement_count) {
                 words[Math.floor(Math.random() * words.length)] = settings.word;
             }
+            if(action) words.unshift('/me');
             maybeSay(msg.channel, words.join(' '));
         });
     });
