@@ -132,6 +132,35 @@ chatbot.chat.connect().then(global_user_state => {
 
     let own_channel = `#${auth.username}`;
     chat.join(own_channel).then(channel_state => {
+
+        // join all the channels in the db
+        let channels = {};
+        let joins = [];
+        let db_gte = 'join.';
+        db.createReadStream({gte: db_gte, lt: `${db_gte}~`})
+        .on('data', data => {
+            if(data.value) {
+                let channel = data.key.substring(db_gte.length);
+                channels[channel] = JSON.parse(data.value);
+                joins.push(channel);
+            }
+        })
+        .on('end', () => {
+            sendJoins();
+            setInterval(sendJoins, 10000);
+        });
+
+        // joins 15 channels (avoid rate limit of 20 per 10s)
+        function sendJoins() {
+            for(let i = 0; joins.length > 0 && i < 15; i++) {
+                let idx = Math.floor(Math.random() * joins.length);
+                let join = joins[idx];
+                joins.splice(idx, 1);
+                chat.join(join);
+            }
+        }
+
+        // handle whispers and chat messages
         chat.on('WHISPER', msg => {
             if(msg.channel == own_channel || msg.channel == `#${msg.username}`) {
                 doCommand(msg.channel, msg.username, msg.message);
@@ -181,31 +210,4 @@ chatbot.chat.connect().then(global_user_state => {
             maybeSay(msg.channel, words.join(' '));
         });
     });
-
-    // join all the channels in the db
-    let channels = {};
-    let joins = [];
-    let db_gte = 'join.';
-    db.createReadStream({gte: db_gte, lt: `${db_gte}~`})
-    .on('data', data => {
-        if(data.value) {
-            let channel = data.key.substring(db_gte.length);
-            channels[channel] = JSON.parse(data.value);
-            joins.push(channel);
-        }
-    })
-    .on('end', () => {
-        sendJoins();
-        setInterval(sendJoins, 10000);
-    });
-
-    // join 15 channels (avoid rate limit of 20 per 10s)
-    function sendJoins() {
-        for(let i = 0; joins.length > 0 && i < 15; i++) {
-            let idx = Math.floor(Math.random() * joins.length);
-            let join = joins[idx];
-            joins.splice(idx, 1);
-            chat.join(join);
-        }
-    }
 });
