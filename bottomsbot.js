@@ -1,6 +1,9 @@
 
 process.on('unhandledRejection', (reason, promise) => {
     console.log('unhandledRejection: ', reason, promise);
+    setTimeout(()=>{ 
+        process.exit();
+    }, 3000);
 });
 
 let level = require('level');
