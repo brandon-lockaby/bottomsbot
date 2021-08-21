@@ -71,7 +71,7 @@ chatbot.chat.connect().then(global_user_state => {
             if(!args.length) return;
             let cmd = args.shift().toLowerCase();
             if(cmd == "!joinme") {
-                maybeSay(channel, `Joining #${user}.`);
+                maybeSay(channel, `Joining #${user}. Keep in miiind ${user}, if I'm responding too often, you can try e.g. !response_frequency 0.075`);
                 return join(`#${user}`);
             } else if(cmd == "!leaveme") {
                 maybeSay(channel, `Leaving #${user}.`);
