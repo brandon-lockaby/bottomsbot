@@ -98,7 +98,7 @@ chatbot.chat.connect().then(global_user_state => {
                     maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
                     return;
                 }
-                let original = channels[ch].hasOwnProperty(word) ? `'${channels[ch].word}'` : `default ('${default_settings.word}')`;
+                let original = channels[ch].hasOwnProperty('word') ? `'${channels[ch].word}'` : `default ('${default_settings.word}')`;
                 channels[ch].word = args[0];
                 db.put(`join.${ch}`, JSON.stringify(channels[ch]));
                 maybeSay(channel, `@${user} changed my word from ${original} to '${args[0]}'`);
@@ -115,7 +115,7 @@ chatbot.chat.connect().then(global_user_state => {
                     maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !response_frequency ${default_settings.response_frequency / 2}`);
                     return true;
                 }
-                let original = channels[ch].hasOwnProperty(response_frequency) ? channels[ch].response_frequency : `default (${default_settings.response_frequency})`;
+                let original = channels[ch].hasOwnProperty('response_frequency') ? channels[ch].response_frequency : `default (${default_settings.response_frequency})`;
                 channels[ch].response_frequency = freq;
                 db.put(`join.${ch}`, JSON.stringify(channels[ch]));
                 maybeSay(channel, `@${user} changed response_frequency from ${original} to ${args[0]}`);
@@ -132,7 +132,7 @@ chatbot.chat.connect().then(global_user_state => {
                     maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !word_frequency ${default_settings.word_frequency}`);
                     return true;
                 }
-                let original = channels[ch].hasOwnProperty(word_frequency) ? channels[ch].word_frequency : `default (${default_settings.word_frequency})`;
+                let original = channels[ch].hasOwnProperty('word_frequency') ? channels[ch].word_frequency : `default (${default_settings.word_frequency})`;
                 channels[ch].word_frequency = freq;
                 db.put(`join.${ch}`, JSON.stringify(channels[ch]));
                 maybeSay(channel, `@${user} changed word_frequency from ${original} to ${args[0]}`);
