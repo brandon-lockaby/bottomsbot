@@ -226,7 +226,7 @@ chatbot.chat.connect().then(global_user_state => {
                         let space = syllable.startsWith(' ') ? ' ' : '';
                         let starts_capitalized = syllable[0] == syllable[0].toUpperCase();
                         let ends_capitalized = syllable[syllable.length - 1] == syllable[syllable.length - 1].toUpperCase();
-                        syllables = settings.word + pluralizer;
+                        syllable = settings.word + pluralizer;
                         if(starts_capitalized) {
                             if(!ends_capitalized) syllable = syllable[0].toUpperCase() + syllable.substring(1);
                             else syllable = syllable.toUpperCase();
