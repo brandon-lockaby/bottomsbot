@@ -185,7 +185,7 @@ chatbot.chat.connect().then(global_user_state => {
                 Object.assign(settings, channels[msg.channel]);
             }
 
-            let message_lowercase = message.toLowerCase();
+            let message_lowercase = msg.message.toLowerCase();
             if(message_lowercase.indexOf(`${auth.username} yes`) < 2 && Math.random() > 0.5) {
                 let responses = ['(¬‿¬)', '☆～（ゝ。∂）', '(⌯⚈ै〰̇⚈ै)', '∩(︶▽︶)∩'];
                 let response = responses[Math.floor(Math.random() * responses.length)];
