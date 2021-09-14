@@ -171,6 +171,7 @@ chatbot.chat.connect().then(global_user_state => {
             }
         });
         chat.on('PRIVMSG', msg => {
+            messageCounter.inc();
             if(doCommand(msg.channel, msg.username, msg.message)) {
                 return;
             }
@@ -211,10 +212,13 @@ chatbot.chat.connect().then(global_user_state => {
                 words[i] = word;
             }
             if(!replacement_count) {
+                replacement_count = 1;
                 words[Math.floor(Math.random() * words.length)] = settings.word;
             }
             if(action) words.unshift('/me');
             maybeSay(msg.channel, words.join(' '));
+            responseCounter.inc();
+            replacedCounter.inc(replacement_count);
         });
     });
 });
@@ -295,3 +299,9 @@ tx2.action('unset', (opt, reply) => {
         reply('err');
     }
 });
+
+tx2.metric('channels.length', () => Object.keys(channels).length)
+
+let messageCounter = tx2.counter('messages');
+let responseCounter = tx2.counter('responses');
+let replacedCounter = tx2.counter('replaced');
