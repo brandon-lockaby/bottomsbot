@@ -186,15 +186,16 @@ chatbot.chat.connect().then(global_user_state => {
             }
 
             let message_lowercase = msg.message.toLowerCase();
-            if(message_lowercase.indexOf(`${auth.username} yes`) < 2 && Math.random() > 0.5) {
+            if(message_lowercase.startsWith('@')) message_lowercase = message_lowercase.substring(1);
+            if(message_lowercase.startsWith(`${auth.username} yes`) && Math.random() > 0.5) {
                 let responses = ['(¬‿¬)', '☆～（ゝ。∂）', '(⌯⚈ै〰̇⚈ै)', '∩(︶▽︶)∩'];
                 let response = responses[Math.floor(Math.random() * responses.length)];
-                maybeSay(msg.channel, `@${msg.username} ${responses}`);
+                maybeSay(msg.channel, `@${msg.username} ${response}`);
                 return;
-            } else if(message_lowercase.indexOf(`@${auth.username} no`) < 2 && Math.random() > 0.5) {
+            } else if(message_lowercase.startsWith(`@${auth.username} no`) && Math.random() > 0.5) {
                 let responses = ['🧐', '╮ (. ❛ ⌓ ❛.) ╭', '(●´⌓`●)'];
                 let response = responses[Math.floor(Math.random() * responses.length)];
-                maybeSay(msg.channel, `@${msg.username} `);
+                maybeSay(msg.channel, `@${msg.username} ${response}`);
                 return;
             }
 
