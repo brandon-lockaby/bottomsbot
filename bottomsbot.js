@@ -188,6 +188,7 @@ chatbot.chat.connect().then(global_user_state => {
             let words = msg.message.split(' ');
             let action = words[0] == '\u0001ACTION';
             if(action) words.shift();
+            if(words.length < 2) if(Math.random() > 0.75) return; // too many one-word bad taste
             for(let i = 0; i < words.length; i++) {
                 let word = words[i];
                 let pluralizer = word.endsWith('s') ? 's' : '';
