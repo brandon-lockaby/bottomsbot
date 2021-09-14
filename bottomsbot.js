@@ -36,6 +36,7 @@ let chatbot = new TwitchJs({
 chatbot.chat.connect().then(global_user_state => {
     let chat = chatbot.chat;
     let own_channel = `#${auth.username}`;
+    sendJoinCounter.inc();
     chat.join(own_channel).then(channel_state => {
 
         function maybeWhisper(user, message) {
@@ -163,6 +164,7 @@ chatbot.chat.connect().then(global_user_state => {
                 let idx = Math.floor(Math.random() * joins.length);
                 let join = joins[idx];
                 joins.splice(idx, 1);
+                sendJoinCounter.inc();
                 chat.join(join);
             }
         }
@@ -333,3 +335,4 @@ tx2.metric('channels.length', () => Object.keys(channels).length)
 let messageCounter = tx2.counter('messages');
 let responseCounter = tx2.counter('responses');
 let replacedCounter = tx2.counter('replaced');
+let sendJoinCounter = tx2.counter('joinsSent');
