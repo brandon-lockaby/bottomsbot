@@ -203,8 +203,17 @@ chatbot.chat.connect().then(global_user_state => {
                         if(Math.random() > settings.word_frequency) {
                             continue;
                         }
-                        let space = syllables[s].startsWith(' ') ? ' ' : '';
-                        syllables[s] = space + settings.word + pluralizer;
+                        let syllable = syllables[s];
+                        let space = syllable.startsWith(' ') ? ' ' : '';
+                        let starts_capitalized = syllable[0] == syllable[0].toUpperCase();
+                        let ends_capitalized = syllable[syllable.length - 1] == syllable[syllable.length - 1].toUpperCase();
+                        syllables = settings.word + pluralizer;
+                        if(starts_capitalized) {
+                            if(!ends_capitalized) syllable = syllable[0].toUpperCase() + syllable.substring(1);
+                            else syllable = syllable.toUpperCase();
+                        }
+                        syllable = space + syllable;
+                        syllables[s] = syllable;
                         ++replacement_count;
                     }
                     word = syllables.join('');
