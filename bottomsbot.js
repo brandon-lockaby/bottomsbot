@@ -108,7 +108,7 @@ chatbot.chat.connect().then(global_user_state => {
                 }
                 let freq = parseFloat(args[0]);
                 if(isNaN(freq) || freq > 1 || freq < 0) {
-                    maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !response_frequency 0.1`);
+                    maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !response_frequency ${default_settings.response_frequency / 2}`);
                     return true;
                 }
                 channels[ch].response_frequency = freq;
@@ -124,7 +124,7 @@ chatbot.chat.connect().then(global_user_state => {
                 }
                 let freq = parseFloat(args[0]);
                 if(isNaN(freq) || freq > 1 || freq < 0) {
-                    maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !word_frequency 0.05`);
+                    maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !word_frequency ${default_settings.word_frequency}`);
                     return true;
                 }
                 channels[ch].word_frequency = freq;
