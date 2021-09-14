@@ -74,7 +74,7 @@ chatbot.chat.connect().then(global_user_state => {
             if(!args.length) return;
             let cmd = args.shift().toLowerCase();
             if(cmd == "!joinme") {
-                maybeSay(channel, `Joining #${user}. Keep in miiind ${user}, if I'm responding too often, you can try e.g. !response_frequency 0.04`);
+                maybeSay(channel, `Joining #${user}. Keep in miiind ${user}, if I'm responding too often, you can try e.g. !response_frequency ${default_settings.response_frequency / 2}`);
                 return join(`#${user}`);
             } else if(cmd == "!leaveme") {
                 maybeSay(channel, `Leaving #${user}.`);
@@ -98,9 +98,10 @@ chatbot.chat.connect().then(global_user_state => {
                     maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
                     return;
                 }
+                let original = channels[ch].hasOwnProperty(word) ? `'${channels[ch].word}'` : `default ('${default_settings.word}')`;
                 channels[ch].word = args[0];
                 db.put(`join.${ch}`, JSON.stringify(channels[ch]));
-                maybeSay(channel, `@${user} changed my word to '${args[0]}'`);
+                maybeSay(channel, `@${user} changed my word from ${original} to '${args[0]}'`);
                 return true;
             }*/
             else if(cmd == "!response_frequency" && args.length > 0) {
@@ -114,9 +115,10 @@ chatbot.chat.connect().then(global_user_state => {
                     maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !response_frequency ${default_settings.response_frequency / 2}`);
                     return true;
                 }
+                let original = channels[ch].hasOwnProperty(response_frequency) ? channels[ch].response_frequency : `default (${default_settings.response_frequency})`;
                 channels[ch].response_frequency = freq;
                 db.put(`join.${ch}`, JSON.stringify(channels[ch]));
-                maybeSay(channel, `@${user} changed response_frequency to ${args[0]}`);
+                maybeSay(channel, `@${user} changed response_frequency from ${original} to ${args[0]}`);
                 return true;
             }
             else if(cmd == "!word_frequency" && args.length > 0) {
@@ -130,9 +132,10 @@ chatbot.chat.connect().then(global_user_state => {
                     maybeSay(channel, `@${user} Use a range between 0 and 1. Example: !word_frequency ${default_settings.word_frequency}`);
                     return true;
                 }
+                let original = channels[ch].hasOwnProperty(word_frequency) ? channels[ch].word_frequency : `default (${default_settings.word_frequency})`;
                 channels[ch].word_frequency = freq;
                 db.put(`join.${ch}`, JSON.stringify(channels[ch]));
-                maybeSay(channel, `@${user} changed word_frequency to ${args[0]}`);
+                maybeSay(channel, `@${user} changed word_frequency from ${original} to ${args[0]}`);
                 return true;
             }
         }
