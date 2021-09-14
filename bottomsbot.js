@@ -49,7 +49,7 @@ chatbot.chat.connect().then(global_user_state => {
             return false;
         }
     
-        function maybeSay(channel, message) { return false; // don't forget to remove this
+        function maybeSay(channel, message) {
             if(chat_rate_limit.attempt()) {
                 chat.say(channel, message);
             }
