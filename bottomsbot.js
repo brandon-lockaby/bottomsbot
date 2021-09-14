@@ -192,7 +192,7 @@ chatbot.chat.connect().then(global_user_state => {
                 let response = responses[Math.floor(Math.random() * responses.length)];
                 maybeSay(msg.channel, `@${msg.username} ${response}`);
                 return;
-            } else if(message_lowercase.startsWith(`@${auth.username} no`) && Math.random() > 0.5) {
+            } else if(message_lowercase.startsWith(`${auth.username} no`) && Math.random() > 0.5) {
                 let responses = ['🧐', '╮ (. ❛ ⌓ ❛.) ╭', '(●´⌓`●)'];
                 let response = responses[Math.floor(Math.random() * responses.length)];
                 maybeSay(msg.channel, `@${msg.username} ${response}`);
