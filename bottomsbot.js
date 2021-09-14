@@ -105,7 +105,7 @@ chatbot.chat.connect().then(global_user_state => {
                 maybeSay(channel, `@${user} changed my word from ${original} to '${args[0]}'`);
                 return true;
             }*/
-            else if(cmd == "!response_frequency" && args.length > 0) {
+            else if(cmd == "!response_frequency") {
                 let ch = `#${user}`;
                 if(!channels[ch]) {
                     maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
@@ -122,7 +122,7 @@ chatbot.chat.connect().then(global_user_state => {
                 maybeSay(channel, `@${user} changed response_frequency from ${original} to ${args[0]}`);
                 return true;
             }
-            else if(cmd == "!word_frequency" && args.length > 0) {
+            else if(cmd == "!word_frequency") {
                 let ch = `#${user}`;
                 if(!channels[ch]) {
                     maybeSay(channel, `@${user} Use !joinme before adjusting other settings.`);
