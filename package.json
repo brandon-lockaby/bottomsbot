@@ -21,6 +21,7 @@
   "homepage": "https://github.com/brandon-lockaby/bottomsbot#readme",
   "dependencies": {
     "level": "^7.0.0",
-    "twitch-js": "^2.0.0-beta.42"
+    "twitch-js": "^2.0.0-beta.42",
+    "tx2": "^1.0.4"
   }
 }

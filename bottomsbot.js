@@ -26,6 +26,9 @@ const syllable_regex = /[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy])
 
 let db = level('./bottomsbot.db');
 
+let channels = {};
+let joins = [];
+
 let chatbot = new TwitchJs({
     token: auth.oauth_token,
     username: auth.username
@@ -46,7 +49,7 @@ chatbot.chat.connect().then(global_user_state => {
             return false;
         }
     
-        function maybeSay(channel, message) {
+        function maybeSay(channel, message) { return false; // don't forget to remove this
             if(chat_rate_limit.attempt()) {
                 chat.say(channel, message);
             }
@@ -135,8 +138,8 @@ chatbot.chat.connect().then(global_user_state => {
         }
 
         // join all the channels in the db
-        let channels = {};
-        let joins = [];
+        channels = {};
+        joins = [];
         let db_gte = 'join.';
         db.createReadStream({gte: db_gte, lt: `${db_gte}~`})
         .on('data', data => {
@@ -214,4 +217,81 @@ chatbot.chat.connect().then(global_user_state => {
             maybeSay(msg.channel, words.join(' '));
         });
     });
+});
+
+// admin interface via pm2
+const tx2 = require('tx2');
+
+// returns all the channels the bot joins and their settings
+// example: pm2 trigger bottomsbot joins
+tx2.action('joins', reply => {
+    let joins = {};
+    let db_gte = 'join.';
+    db.createReadStream({gte: db_gte, lt: `${db_gte}~`})
+    .on('data', data => {
+        if(data.value) {
+            let join = data.key.substring(db_gte.length);
+            joins[join] = JSON.parse(data.value);
+        }
+    })
+    .on('end', () => {
+        reply({joins});
+    });
+});
+
+// returns a user's channel settings
+// e.g. pm2 trigger bottomsbot settings bottomsbot
+tx2.action('settings', (opt, reply) => {
+    db.get(`join.#${opt}`, (err, value) => {
+        if(err) reply('err');
+        else reply(value);
+    });
+});
+
+// e.g. pm2 trigger bottomsbot set bottomsbot.response_frequency=0.001
+tx2.action('set', (opt, reply) => {
+    try {
+        opt = opt.match(/^(.*)\.(.*)=(.*)/);
+        if(opt.length != 4) return reply('err');
+        opt = opt.slice(1);
+        let channel = `#${opt[0]}`, setting = opt[1], value = opt[2];
+        let db_key = `join.${channel}`;
+        db.get(db_key, (err, settings) => {
+            if(err) return reply('err');
+            settings = JSON.parse(settings);
+            settings[setting] = value;
+            channels[channel] = settings;
+            settings = JSON.stringify(settings);
+            db.put(db_key, settings);
+            let r = {};
+            r[db_key] = settings;
+            reply(r);
+        });
+    } catch(err) {
+        reply('err');
+    }
+});
+
+// e.g. pm2 trigger bottomsbot unset bottomsbot.response_frequency
+tx2.action('unset', (opt, reply) => {
+    try {
+        opt = opt.match(/^(.*)\.(.*)/);
+        if(opt.length != 3) return reply('err');
+        opt = opt.slice(1);
+        let channel = `#${opt[0]}`, setting = opt[1];
+        let db_key = `join.${channel}`;
+        db.get(db_key, (err, settings) => {
+            if(err) return reply('err');
+            settings = JSON.parse(settings);
+            delete settings[setting];
+            channels[channel] = settings;
+            settings = JSON.stringify(settings);
+            db.put(db_key, settings);
+            let r = {};
+            r[db_key] = settings;
+            reply(r);
+        });
+    } catch(err) {
+        reply('err');
+    }
 });
